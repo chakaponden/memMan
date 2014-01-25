@@ -105,7 +105,6 @@ PAGE_COUNT_TYPE RAM::  searchFreePage(BYTE location = 2)		// location = ram/swap
 			return startPage+1;												// return freePageNum + 1
 		tmpUk = ((BYTE*)tmpUk  + PAGE_MAP_SIZE+sizeof(PAGE_MAP_TYPE));
 	}
-	printf("Error all memory is full RAM::ramUk\n");
 	return 0;
 }
 
@@ -317,7 +316,7 @@ bool RAM:: write2BitsMap(PAGE_COUNT_TYPE idPage,PAGE_MAP_TYPE idBlock, TwoBits b
 TwoBits RAM:: read2BitsMap(PAGE_COUNT_TYPE idPage,PAGE_MAP_TYPE idBlock)
 {
 	void *tmpUk = NULL;
-	TwoBits tmpBits;
+	TwoBits tmpBits; tmpBits.first = true; tmpBits.second = true;
 	if(NULL == (tmpUk = (readPageMap(idPage))))
 		return tmpBits;
 	if(idBlock >= PAGE_MAP_COUNT)
@@ -723,7 +722,7 @@ Pointer RAM:: mallocObj(__int64 bytes, BYTE location = 2)
 			PAGE_MAP_TYPE endBlock = 0, startBlock = 0, firstStartBlock;
 			Pointer continuePoint;
 			__int64 effectiveDataBytesWritten = bytes;											// if effectiveDataBytesWritten <= 0, then page data is full
-			for(PAGE_MAP_TYPE blockNumber = 0; effectiveDataBytesWritten > 0; blockNumber++)	// and there are no free data blocks in this page
+			for(PAGE_MAP_TYPE blockNumber = 0; effectiveDataBytesWritten > 0 && blockNumber < PAGE_MAP_COUNT; blockNumber++)	// and there are no free data blocks in this page
 			{
 				if(!(this->read2BitsMap(idPageLargeFreeBytes, blockNumber)))
 				{
@@ -982,7 +981,7 @@ Pointer RAM:: callocObj(__int64 bytes, BYTE location = 2)
 			PAGE_MAP_TYPE endBlock = 0, startBlock = 0, firstStartBlock;
 			Pointer continuePoint;
 			__int64 effectiveDataBytesWritten = bytes;									// if effectiveDataBytesWritten <= 0, then page data is full
-			for(PAGE_MAP_TYPE blockNumber = 0; effectiveDataBytesWritten > 0; blockNumber++)	// and there are no free data blocks in this page
+			for(PAGE_MAP_TYPE blockNumber = 0; effectiveDataBytesWritten > 0 && blockNumber < PAGE_MAP_COUNT; blockNumber++)	// and there are no free data blocks in this page
 			{
 				if(!(this->read2BitsMap(idPageLargeFreeBytes, blockNumber)))
 				{
@@ -1054,8 +1053,13 @@ Pointer RAM:: callocObj(__int64 bytes, BYTE location = 2)
 }
 // free function
 // mark all Pointer link bitMap blocks as free (00) and update Page indicators
-void RAM:: freeObj(Pointer link)
+// + set link.idPage to max type value (for BYTE == 255)
+// idPage set to max type value in constructor (for type 'BYTE', value is 255)
+// it means, that there is no allocated memory for this pointer
+void RAM:: freeObj(Pointer &link)
 {
+	if(link.idPage > SWAP_MAX_PAGE)											// if Pointer link is Null pointer (see Pointer struct)
+		return;
 	TwoBits readBits, eraseBits;
 	DataLocation tmpLocation;
 	Pointer tmpPointer;
@@ -1076,6 +1080,7 @@ void RAM:: freeObj(Pointer link)
 		link.idBlock++;
 	}
 	this->updatePageInd(link.idPage);										// update page indicator
+	link.idPage = SWAP_MAX_PAGE; link.idPage++;
 }
 // read Data
 // return false if error, true if ok

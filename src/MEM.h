@@ -48,7 +48,10 @@ public:
 	Pointer calloc(__int64 bytes, BYTE location);
 		// free function
 		// mark all Pointer link bitMap blocks as free (00) and update Page indicators
-	void free(Pointer link);
+		// + set link.idPage to max type value (for BYTE == 255)
+		// idPage set to max type value in constructor (for type 'BYTE', value is 255)
+		// it means, that there is no allocated memory for this pointer
+	void free(Pointer &link);
 		// read Data
 		// return false if error, true if ok
 	bool read(Pointer link, BYTE &buffer);

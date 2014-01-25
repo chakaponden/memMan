@@ -115,7 +115,10 @@ class RAM			// RAM
 /**/		Pointer callocObj(__int64 bytes, BYTE location);
 			// free function
 			// mark all Pointer link bitMap blocks as free (00) and update Page indicators
-/**/		void freeObj(Pointer link);
+			// + set link.idPage to max type value (for BYTE == 255)
+			// idPage set to max type value in constructor (for type 'BYTE', value is 255)
+			// it means, that there is no allocated memory for this pointer
+/**/		void freeObj(Pointer &link);
 			// read Data
 			// return false if error, true if ok
 /**/		bool readObj(Pointer link, BYTE &buffer);

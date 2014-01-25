@@ -74,11 +74,14 @@ struct DataLocation
 
 // type, that return when memory allocate
 // this type point to first start allocated block
+// idPage set to max type value in constructor (for type 'BYTE', value is 255)
+// it means, that there is no allocated memory for this pointer
+// (it's use in functions like 'void RAM:: freeObj()' and another)
 struct Pointer
 {
 	PAGE_COUNT_TYPE idPage;
 	PAGE_MAP_TYPE idBlock;
-	Pointer(void) {idPage = idBlock = 0;}
+	Pointer(void) {idPage = SWAP_MAX_PAGE+1; idBlock = 0;}
 };
 
 struct TwoBits

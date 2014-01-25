@@ -9,11 +9,18 @@
 using namespace mainSpace;
 
 
+void showMemMap(MEM man)
+{
+	BYTE input[128];											// for input
+	system("clear");											// clear screen
+	man.drawMemoryMap();										// draw memory map
+	scanf("%c", input);											// press 'ENTER'
+}
+
 void example0()
 {
 	/* example of allocate mem for object */
 	/* read-write-free operations with allocated mem/obj */
-		BYTE input[128];	// for input
 		BYTE tmp[] = {												// temp data
 				 0xAA, 0xCC, 0xDD, 0xFF, 0xFF, 0xFF, 0xFF, 0xEE,
 				 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
@@ -33,22 +40,41 @@ void example0()
 				 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
 				 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xBB };
 		bool ret;													// for return code
-		__int64 ramPages = 2; __int64 swapPages = 10;				// pages num for allocate
+		__int64 ramPages = 2; __int64 swapPages = 5;				// pages num for allocate
 		MEM man; man.init(ramPages, swapPages);						// init memory manager
-		system("clear");
-		man.drawMemoryMap();										// draw memory map
-		scanf("%c", input);
-		Pointer uk = man.calloc(178, 2);							// allocate mem for object
-		ret = man.read(uk, *tmp);									// read obj data to *tmp
-		system("clear");
-		ret = man.write(uk, *tmpMap);								// write data from *tmpMap to obj
-		man.drawMemoryMap();										// draw memory map
-		scanf("%c", input);
-		ret = man.read(uk, *tmp);									// read obj data to *tmp
-		man.free(uk);												// free obj allocated mem
-		system("clear");
-		man.drawMemoryMap();										// draw memory map
-		scanf("%c", input);
+		showMemMap(man);
+		Pointer uk0, uk1, uk2, uk3, uk4;
+		uk0 = man.calloc(52, 2);									// allocate mem for object 0
+		ret = man.read(uk0, *tmp);									// read obj data to *tmp
+		showMemMap(man);
+		uk1 = man.calloc(140,2);									// allocate mem object 1
+		showMemMap(man);
+		uk2 = man.calloc(35,2);										// allocate mem object 2
+		showMemMap(man);
+		man.free(uk1);												// free mem object 1
+		showMemMap(man);
+		uk3 = man.calloc(102,2);									// allocate mem object 3
+		showMemMap(man);
+		uk4 = man.calloc(80,2);										// allocate mem object 4
+		showMemMap(man);
+		ret = man.write(uk0, *tmpMap);								// write data from *tmpMap to obj
+		ret = man.read(uk0, *tmp);									// read obj data to *tmp
+		uk1 = man.calloc(37,2);										// allocate mem object 1
+		showMemMap(man);
+		man.free(uk2);												// free mem object 2
+		showMemMap(man);
+		uk2 = man.calloc(162,2);									// allocate mem object 2
+		showMemMap(man);
+		man.free(uk2);												// free mem object 2
+		showMemMap(man);
+		man.free(uk0);												// free mem object 0
+		showMemMap(man);
+		man.free(uk1);												// free mem object 1
+		showMemMap(man);
+		man.free(uk3);												// free mem object 3
+		showMemMap(man);
+		man.free(uk4);												// free mem object 4
+		showMemMap(man);
 		man.end();													// end work with memory manager
 }
 

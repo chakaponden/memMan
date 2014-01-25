@@ -165,7 +165,10 @@ Pointer MEM:: calloc(__int64 bytes, BYTE location = 2)
 }
 // free function
 // mark all Pointer link bitMap blocks as free (00) and update Page indicators
-void MEM:: free(Pointer link)
+// + set link.idPage to max type value (for BYTE == 255)
+// idPage set to max type value in constructor (for type 'BYTE', value is 255)
+// it means, that there is no allocated memory for this pointer
+void MEM:: free(Pointer &link)
 {
 	this->ram.freeObj(link);
 }
