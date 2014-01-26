@@ -1086,6 +1086,8 @@ void RAM:: freeObj(Pointer &link)
 // return false if error, true if ok
 bool RAM:: readObj(Pointer link, BYTE &buffer)
 {
+	if(link.idPage > SWAP_MAX_PAGE)											// if Pointer link is Null pointer (see Pointer struct)
+		return false;
 	TwoBits readBits;
 	Pointer tmpPointer;
 	BYTE *tmpUk = &buffer;
@@ -1114,6 +1116,8 @@ bool RAM:: readObj(Pointer link, BYTE &buffer)
 // return true if ok, false if error
 bool RAM:: writeObj(Pointer link, BYTE &Data)
 {
+	if(link.idPage > SWAP_MAX_PAGE)											// if Pointer link is Null pointer (see Pointer struct)
+		return false;
 	TwoBits readBits;
 	Pointer tmpPointer;
 	BYTE *tmpUk = &Data;
